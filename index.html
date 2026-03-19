@@ -7,22 +7,22 @@
 <style>
 body{
     margin:0;
-    overflow:hidden;
     font-family:sans-serif;
     color:white;
     text-align:center;
-    background: url("foto.jpg") no-repeat center/cover;
+    background:url("foto.jpg") no-repeat center/cover;
 }
 
 body::before{
     content:"";
-    position:absolute;
+    position:fixed;
     width:100%;
     height:100%;
-    background:rgba(0,0,0,0.5);
+    background:rgba(0,0,0,0.6);
     z-index:-1;
 }
 
+/* telas */
 .tela{
     position:fixed;
     width:100%;
@@ -35,11 +35,11 @@ body::before{
 
 /* botões */
 button{
-    padding:12px 25px;
+    padding:15px 30px;
+    font-size:18px;
     border:none;
-    border-radius:10px;
-    font-size:16px;
-    cursor:pointer;
+    border-radius:12px;
+    margin:10px;
 }
 
 #sim{background:#ff4d6d;}
@@ -48,42 +48,73 @@ button{
     position:absolute;
 }
 
-/* esconder telas */
+/* esconder */
 #poesia, #final{
     display:none;
 }
 
-/* botão próximo escondido */
-#btnProximo{
-    margin-top:20px;
-    display:none;
+/* texto poesia */
+#texto{
+    max-width:90%;
+    font-size:22px;
+    line-height:1.7;
 }
 
-/* player */
+/* botão próximo */
+#btnProximo{
+    display:none;
+    margin-top:30px;
+    font-size:20px;
+    background:#ff4d6d;
+}
+
+/* final */
+#final h2{
+    font-size:30px;
+}
+
+#tempo{
+    font-size:22px;
+    margin-top:20px;
+}
+
+/* PLAYER GRANDE */
 #player{
     position:fixed;
     bottom:0;
     width:100%;
     background:#111;
-    padding:10px;
+    padding:15px;
     display:flex;
     align-items:center;
-    gap:10px;
+    gap:15px;
 }
 
 #capa{
-    width:50px;
-    height:50px;
+    width:60px;
+    height:60px;
+    border-radius:10px;
 }
 
-#info{flex:1;text-align:left;}
-input[type=range]{width:100%;}
+#info{
+    flex:1;
+    text-align:left;
+    font-size:16px;
+}
+
+input[type=range]{
+    width:100%;
+}
+
+#player button{
+    font-size:20px;
+}
 
 /* corações */
 .coracao{
     position:fixed;
     top:-10px;
-    font-size:20px;
+    font-size:22px;
     animation:cair linear infinite;
 }
 @keyframes cair{
@@ -92,9 +123,9 @@ input[type=range]{width:100%;}
 
 #pato{
     position:fixed;
-    bottom:70px;
+    bottom:90px;
     right:10px;
-    font-size:12px;
+    font-size:14px;
 }
 </style>
 </head>
@@ -111,7 +142,7 @@ input[type=range]{width:100%;}
 <!-- TELA 2 -->
 <div id="poesia" class="tela">
     <div id="texto"></div>
-    <button id="btnProximo" onclick="irFinal()">próximo</button>
+    <button id="btnProximo" onclick="irFinal()">Próximo</button>
 </div>
 
 <!-- TELA 3 -->
@@ -126,7 +157,7 @@ input[type=range]{width:100%;}
     <img id="capa" src="capa.jpg">
     <div id="info">
         <div>Lana</div>
-        <div style="font-size:12px;">Kamaitachi</div>
+        <div style="opacity:0.7;">Kamaitachi</div>
         <input type="range" id="barra">
     </div>
     <button onclick="toggle()">▶</button>
@@ -148,14 +179,13 @@ document.body.addEventListener("click", ()=>{
     musica.play();
 }, { once:true });
 
-/* ir poesia */
+/* telas */
 function irPoesia(){
     document.getElementById("inicio").style.display="none";
     document.getElementById("poesia").style.display="flex";
     iniciarPoesia();
 }
 
-/* ir final */
 function irFinal(){
     document.getElementById("poesia").style.display="none";
     document.getElementById("final").style.display="flex";
