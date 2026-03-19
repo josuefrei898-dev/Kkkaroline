@@ -29,20 +29,38 @@ body::before{
     height:100%;
     display:flex;
     flex-direction:column;
-    justify-content:center;
     align-items:center;
+    padding:20px;
+    box-sizing:border-box;
+}
+
+/* início centralizado */
+#inicio{
+    justify-content:center;
+}
+
+/* poesia com scroll */
+#poesia{
+    justify-content:flex-start;
+    overflow-y:auto;
+}
+
+/* final centralizado */
+#final{
+    justify-content:center;
 }
 
 /* botões */
 button{
     padding:15px 30px;
-    font-size:18px;
+    font-size:20px;
     border:none;
     border-radius:12px;
     margin:10px;
 }
 
 #sim{background:#ff4d6d;}
+
 #nao{
     background:#222;
     position:absolute;
@@ -58,14 +76,16 @@ button{
     max-width:90%;
     font-size:22px;
     line-height:1.7;
+    margin-bottom:30px;
 }
 
-/* botão próximo */
+/* botão próximo fixo */
 #btnProximo{
     display:none;
-    margin-top:30px;
     font-size:20px;
     background:#ff4d6d;
+    position:fixed;
+    bottom:100px;
 }
 
 /* final */
@@ -84,22 +104,22 @@ button{
     bottom:0;
     width:100%;
     background:#111;
-    padding:15px;
+    padding:20px;
     display:flex;
     align-items:center;
-    gap:15px;
+    gap:20px;
 }
 
 #capa{
-    width:60px;
-    height:60px;
+    width:80px;
+    height:80px;
     border-radius:10px;
 }
 
 #info{
     flex:1;
     text-align:left;
-    font-size:16px;
+    font-size:18px;
 }
 
 input[type=range]{
@@ -107,7 +127,8 @@ input[type=range]{
 }
 
 #player button{
-    font-size:20px;
+    font-size:28px;
+    padding:10px;
 }
 
 /* corações */
@@ -123,7 +144,7 @@ input[type=range]{
 
 #pato{
     position:fixed;
-    bottom:90px;
+    bottom:110px;
     right:10px;
     font-size:14px;
 }
@@ -256,13 +277,18 @@ barra.addEventListener("input", ()=>{
     musica.currentTime = (barra.value/100)*musica.duration;
 });
 
-/* fugir */
+/* fugir corrigido */
 function fugir(){
-    let x=Math.random()*(window.innerWidth-100);
-    let y=Math.random()*(window.innerHeight-50);
-    let b=document.getElementById("nao");
-    b.style.left=x+"px";
-    b.style.top=y+"px";
+    let b = document.getElementById("nao");
+
+    let largura = window.innerWidth - b.offsetWidth;
+    let altura = window.innerHeight - b.offsetHeight;
+
+    let x = Math.random() * largura;
+    let y = Math.random() * altura;
+
+    b.style.left = x + "px";
+    b.style.top = y + "px";
 }
 
 /* corações */
