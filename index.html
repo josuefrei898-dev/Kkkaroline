@@ -12,7 +12,7 @@ html, body{
     height:100%;
 }
 
-/* fundo */
+/* FUNDO */
 body{
     font-family:sans-serif;
     color:white;
@@ -25,11 +25,11 @@ body::before{
     content:"";
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,0.35);
+    background:rgba(0,0,0,0.4);
     z-index:-1;
 }
 
-/* telas */
+/* TELAS */
 .tela{
     position:fixed;
     inset:0;
@@ -37,57 +37,60 @@ body::before{
     justify-content:center;
     align-items:center;
     flex-direction:column;
+    padding:20px;
 }
 
-/* esconder */
+/* ESCONDER */
 #labirintoTela, #poesia, #final{
     display:none;
 }
 
+/* TEXTOS RESPONSIVOS */
+h1, h2{
+    font-size:clamp(22px,6vw,32px);
+}
+
+#texto{
+    max-width:90%;
+    font-size:clamp(18px,5vw,24px);
+}
+
 /* LABIRINTO */
 #labirinto{
-    width:300px;
-    height:300px;
+    width:80vw;
+    height:80vw;
+    max-width:320px;
+    max-height:320px;
     background:#111;
     position:relative;
     border:3px solid white;
 }
 
+/* PAREDES */
 .parede{
     position:absolute;
     background:white;
 }
 
-#inicioPlayer{
+/* PLAYER */
+#playerHeart{
     position:absolute;
-    width:30px;
-    height:30px;
-    font-size:24px;
-    text-align:center;
+    width:28px;
+    height:28px;
+    font-size:22px;
 }
 
+/* FIM */
 #fim{
     position:absolute;
     width:30px;
     height:30px;
     background:lime;
+    right:10px;
+    bottom:10px;
 }
 
-/* player */
-#playerHeart{
-    position:absolute;
-    width:30px;
-    height:30px;
-    font-size:22px;
-}
-
-/* poesia */
-#texto{
-    max-width:90%;
-    font-size:22px;
-}
-
-/* botão */
+/* BOTÕES */
 button{
     padding:15px 30px;
     font-size:20px;
@@ -99,7 +102,7 @@ button{
 #sim{background:#ff4d6d;}
 #nao{position:absolute;background:#222;}
 
-/* player música */
+/* PLAYER MÚSICA */
 #player{
     position:fixed;
     bottom:0;
@@ -109,10 +112,30 @@ button{
     display:flex;
     gap:10px;
     align-items:center;
+    height:80px;
 }
 
-#capa{width:60px;height:60px;}
-#info{flex:1;text-align:left;}
+#capa{
+    width:70px;
+    height:70px;
+}
+
+#info{
+    flex:1;
+    text-align:left;
+    font-size:18px;
+}
+
+#player button{
+    font-size:22px;
+    padding:10px 20px;
+}
+
+/* FINAL */
+#final{
+    gap:10px;
+    font-size:22px;
+}
 </style>
 </head>
 
@@ -167,7 +190,18 @@ button{
 let musica = document.getElementById("musica");
 let tempoInicio;
 
-/* iniciar */
+let inicio = document.getElementById("inicio");
+let labirintoTela = document.getElementById("labirintoTela");
+let poesia = document.getElementById("poesia");
+let final = document.getElementById("final");
+let texto = document.getElementById("texto");
+let tempo = document.getElementById("tempo");
+let nao = document.getElementById("nao");
+let labirinto = document.getElementById("labirinto");
+let fim = document.getElementById("fim");
+let player = document.getElementById("playerHeart");
+
+/* INICIAR */
 function irLabirinto(){
 inicio.style.display="none";
 labirintoTela.style.display="flex";
@@ -176,21 +210,25 @@ tempoInicio = Date.now();
 resetPlayer();
 }
 
-/* player controle */
-let player = document.getElementById("playerHeart");
-
+/* RESET PLAYER */
 function resetPlayer(){
 player.style.left="10px";
 player.style.top="10px";
 }
 
-/* controle touch */
+/* CONTROLE TOUCH */
 document.addEventListener("touchmove", e=>{
+if(labirintoTela.style.display !== "flex") return;
+
 let t = e.touches[0];
 let rect = labirinto.getBoundingClientRect();
 
 let x = t.clientX - rect.left -15;
 let y = t.clientY - rect.top -15;
+
+/* LIMITES */
+x = Math.max(0, Math.min(x, rect.width-30));
+y = Math.max(0, Math.min(y, rect.height-30));
 
 player.style.left = x+"px";
 player.style.top = y+"px";
@@ -198,7 +236,7 @@ player.style.top = y+"px";
 colisao();
 });
 
-/* colisão */
+/* COLISÃO */
 function colisao(){
 let p = player.getBoundingClientRect();
 
@@ -210,7 +248,7 @@ resetPlayer();
 }
 });
 
-/* fim */
+/* CHEGAR NO FIM */
 let f = fim.getBoundingClientRect();
 
 if(!(p.right<f.left || p.left>f.right || p.bottom<f.top || p.top>f.bottom)){
@@ -218,7 +256,7 @@ terminarLabirinto();
 }
 }
 
-/* terminar */
+/* TERMINAR */
 function terminarLabirinto(){
 labirintoTela.style.display="none";
 poesia.style.display="flex";
@@ -230,7 +268,7 @@ tempo.innerText = "vc terminou em "+segundos+"s";
 iniciarPoesia();
 }
 
-/* poesia */
+/* POESIA */
 const linhas=[
 "eu nem tava pensando em vc...",
 "mas vc sempre aparece...",
@@ -238,11 +276,15 @@ const linhas=[
 ];
 
 function iniciarPoesia(){
+texto.innerHTML="";
 let i=0;
 
 function escrever(){
 if(i>=linhas.length){
-setTimeout(()=>{poesia.style.display="none";final.style.display="flex";},1500);
+setTimeout(()=>{
+poesia.style.display="none";
+final.style.display="flex";
+},1500);
 return;
 }
 
@@ -265,13 +307,16 @@ setTimeout(escrever,400);
 escrever();
 }
 
-/* fugir */
+/* BOTÃO NÃO */
 function fugir(){
-nao.style.left=Math.random()*200+"px";
-nao.style.top=Math.random()*300+"px";
+let w = window.innerWidth - 100;
+let h = window.innerHeight - 100;
+
+nao.style.left = Math.random()*w+"px";
+nao.style.top = Math.random()*h+"px";
 }
 
-/* musica */
+/* MUSICA */
 function toggle(){
 musica.paused?musica.play():musica.pause();
 }
