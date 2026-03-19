@@ -9,11 +9,10 @@
 html, body{
     margin:0;
     padding:0;
-    width:100%;
     height:100%;
 }
 
-/* FUNDO CERTO */
+/* fundo */
 body{
     font-family:sans-serif;
     color:white;
@@ -22,7 +21,6 @@ body{
     background-size:cover;
 }
 
-/* sombra */
 body::before{
     content:"";
     position:fixed;
@@ -36,37 +34,60 @@ body::before{
     position:fixed;
     inset:0;
     display:flex;
-    flex-direction:column;
     justify-content:center;
     align-items:center;
-    padding:20px;
-    box-sizing:border-box;
-}
-
-/* poesia com scroll */
-#poesia{
-    justify-content:flex-start;
-    overflow-y:auto;
+    flex-direction:column;
 }
 
 /* esconder */
-#poesia, #final{
+#labirintoTela, #poesia, #final{
     display:none;
 }
 
-/* textos */
-h1, h2, p{
-    margin:10px 0;
+/* LABIRINTO */
+#labirinto{
+    width:300px;
+    height:300px;
+    background:#111;
+    position:relative;
+    border:3px solid white;
 }
 
-#texto{
-    max-width:600px;
-    width:100%;
+.parede{
+    position:absolute;
+    background:white;
+}
+
+#inicioPlayer{
+    position:absolute;
+    width:30px;
+    height:30px;
+    font-size:24px;
+    text-align:center;
+}
+
+#fim{
+    position:absolute;
+    width:30px;
+    height:30px;
+    background:lime;
+}
+
+/* player */
+#playerHeart{
+    position:absolute;
+    width:30px;
+    height:30px;
     font-size:22px;
-    line-height:1.6;
 }
 
-/* botões */
+/* poesia */
+#texto{
+    max-width:90%;
+    font-size:22px;
+}
+
+/* botão */
 button{
     padding:15px 30px;
     font-size:20px;
@@ -76,215 +97,184 @@ button{
 }
 
 #sim{background:#ff4d6d;}
+#nao{position:absolute;background:#222;}
 
-#nao{
-    background:#222;
-    position:absolute;
-}
-
-/* botão próximo */
-#btnProximo{
-    display:none;
-    margin-top:30px;
-    font-size:20px;
-    background:#ff4d6d;
-}
-
-/* tempo */
-#tempo{
-    font-size:22px;
-}
-
-/* PLAYER */
+/* player música */
 #player{
     position:fixed;
     bottom:0;
     width:100%;
     background:#111;
-    padding:15px;
+    padding:10px;
     display:flex;
+    gap:10px;
     align-items:center;
-    gap:15px;
 }
 
-#capa{
-    width:70px;
-    height:70px;
-    border-radius:10px;
-}
-
-#info{
-    flex:1;
-    text-align:left;
-}
-
-input[type=range]{
-    width:100%;
-}
-
-#player button{
-    font-size:24px;
-}
-
-/* corações */
-.coracao{
-    position:fixed;
-    top:-10px;
-    font-size:24px;
-    animation:cair linear infinite;
-}
-
-@keyframes cair{
-    to{transform:translateY(110vh);}
-}
-
-/* QUAK GRANDE */
-#pato{
-    position:fixed;
-    bottom:120px;
-    right:15px;
-    font-size:22px;
-}
+#capa{width:60px;height:60px;}
+#info{flex:1;text-align:left;}
 </style>
 </head>
 
 <body>
 
+<!-- INICIO -->
 <div id="inicio" class="tela">
-    <h1>Karoline, você ama o Josué? ❤️</h1>
-    <button id="sim" onclick="irPoesia()">Sim</button>
-    <button id="nao" onmouseover="fugir()">Não</button>
+<h1>Karoline, você ama o Josué? ❤️</h1>
+<button id="sim" onclick="irLabirinto()">Sim</button>
+<button id="nao" onmouseover="fugir()">Não</button>
 </div>
 
+<!-- LABIRINTO -->
+<div id="labirintoTela" class="tela">
+<h2>Guia o coração ❤️</h2>
+<div id="labirinto">
+
+<div id="playerHeart">❤️</div>
+<div id="fim"></div>
+
+<!-- paredes -->
+<div class="parede" style="top:0;left:80px;width:10px;height:200px;"></div>
+<div class="parede" style="top:100px;left:80px;width:150px;height:10px;"></div>
+<div class="parede" style="top:50px;left:200px;width:10px;height:200px;"></div>
+
+</div>
+</div>
+
+<!-- POESIA -->
 <div id="poesia" class="tela">
-    <div id="texto"></div>
-    <button id="btnProximo" onclick="irFinal()">Próximo</button>
+<div id="texto"></div>
 </div>
 
+<!-- FINAL -->
 <div id="final" class="tela">
-    <h2>KAROLINE ❤️</h2>
-    <p> TE AMO❤️</p>
-    <p id="tempo"></p>
+<h2>KAROLINE ❤️</h2>
+<p id="tempo"></p>
 </div>
 
+<!-- MUSICA -->
 <div id="player">
-    <img id="capa" src="capa.jpg">
-    <div id="info">
-        <div>Lana</div>
-        <div style="opacity:0.7;">Kamaitachi</div>
-        <input type="range" id="barra">
-    </div>
-    <button onclick="toggle()">▶</button>
+<img id="capa" src="capa.jpg">
+<div id="info">Lana - Kamaitachi</div>
+<button onclick="toggle()">▶</button>
 </div>
 
 <audio id="musica">
-    <source src="lana.mp3">
+<source src="lana.mp3">
 </audio>
-
-<div id="pato">🦆 quak</div>
 
 <script>
 let musica = document.getElementById("musica");
-let barra = document.getElementById("barra");
-let tempoInicio = Date.now();
+let tempoInicio;
 
-document.body.addEventListener("click", ()=>{
-    musica.play();
-}, { once:true });
+/* iniciar */
+function irLabirinto(){
+inicio.style.display="none";
+labirintoTela.style.display="flex";
 
-function irPoesia(){
-    inicio.style.display="none";
-    poesia.style.display="flex";
-    iniciarPoesia();
+tempoInicio = Date.now();
+resetPlayer();
 }
 
-function irFinal(){
-    poesia.style.display="none";
-    final.style.display="flex";
+/* player controle */
+let player = document.getElementById("playerHeart");
 
-    let tempoFinal = Date.now();
-    let segundos = ((tempoFinal - tempoInicio)/1000).toFixed(1);
-    tempo.innerText = "vc EXITOU por " + segundos + "s";
+function resetPlayer(){
+player.style.left="10px";
+player.style.top="10px";
 }
 
-const linhas = [
+/* controle touch */
+document.addEventListener("touchmove", e=>{
+let t = e.touches[0];
+let rect = labirinto.getBoundingClientRect();
+
+let x = t.clientX - rect.left -15;
+let y = t.clientY - rect.top -15;
+
+player.style.left = x+"px";
+player.style.top = y+"px";
+
+colisao();
+});
+
+/* colisão */
+function colisao(){
+let p = player.getBoundingClientRect();
+
+document.querySelectorAll(".parede").forEach(w=>{
+let r = w.getBoundingClientRect();
+
+if(!(p.right<r.left || p.left>r.right || p.bottom<r.top || p.top>r.bottom)){
+resetPlayer();
+}
+});
+
+/* fim */
+let f = fim.getBoundingClientRect();
+
+if(!(p.right<f.left || p.left>f.right || p.bottom<f.top || p.top>f.bottom)){
+terminarLabirinto();
+}
+}
+
+/* terminar */
+function terminarLabirinto(){
+labirintoTela.style.display="none";
+poesia.style.display="flex";
+
+let tempoFinal = Date.now();
+let segundos = ((tempoFinal - tempoInicio)/1000).toFixed(1);
+tempo.innerText = "vc terminou em "+segundos+"s";
+
+iniciarPoesia();
+}
+
+/* poesia */
+const linhas=[
 "eu nem tava pensando em vc...",
-"era pra eu tá estudando",
-"mas vc apareceu",
-"",
-"vc me ajudou até nisso",
-"até com html",
-"",
-"cada coisa que eu faço",
-"tem um pouco de vc",
-"",
-"eu só quero te ver logo",
-"",
-"❤️"
+"mas vc sempre aparece...",
+"e eu gosto disso ❤️"
 ];
 
 function iniciarPoesia(){
-    let i=0;
+let i=0;
 
-    function escrever(){
-        if(i>=linhas.length){
-            btnProximo.style.display="block";
-            return;
-        }
-
-        let p=document.createElement("p");
-        texto.appendChild(p);
-
-        let j=0;
-        let linha=linhas[i];
-
-        let inter=setInterval(()=>{
-            p.innerHTML+=linha[j]||"";
-            j++;
-
-            if(j>linha.length){
-                clearInterval(inter);
-                i++;
-                setTimeout(escrever,400);
-            }
-        },40);
-    }
-
-    escrever();
+function escrever(){
+if(i>=linhas.length){
+setTimeout(()=>{poesia.style.display="none";final.style.display="flex";},1500);
+return;
 }
 
-function toggle(){
-    musica.paused ? musica.play() : musica.pause();
+let p=document.createElement("p");
+texto.appendChild(p);
+
+let j=0;
+let inter=setInterval(()=>{
+p.innerHTML+=linhas[i][j]||"";
+j++;
+
+if(j>linhas[i].length){
+clearInterval(inter);
+i++;
+setTimeout(escrever,400);
+}
+},40);
 }
 
-musica.addEventListener("timeupdate", ()=>{
-    barra.value = (musica.currentTime / musica.duration)*100;
-});
+escrever();
+}
 
-barra.addEventListener("input", ()=>{
-    musica.currentTime = (barra.value/100)*musica.duration;
-});
-
+/* fugir */
 function fugir(){
-    let b = document.getElementById("nao");
-
-    let largura = window.innerWidth - b.offsetWidth;
-    let altura = window.innerHeight - b.offsetHeight;
-
-    b.style.left = Math.random()*largura + "px";
-    b.style.top = Math.random()*altura + "px";
+nao.style.left=Math.random()*200+"px";
+nao.style.top=Math.random()*300+"px";
 }
 
-function criarCoracao(){
-    let c=document.createElement("div");
-    c.className="coracao";
-    c.innerHTML="❤️";
-    c.style.left=Math.random()*100+"vw";
-    c.style.animationDuration=(Math.random()*3+2)+"s";
-    document.body.appendChild(c);
-    setTimeout(()=>c.remove(),5000);
+/* musica */
+function toggle(){
+musica.paused?musica.play():musica.pause();
 }
-setInterval(criarCoracao,300);
 </script>
 
 </body>
