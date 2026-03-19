@@ -12,7 +12,6 @@ html, body{
     height:100%;
 }
 
-/* FUNDO */
 body{
     font-family:sans-serif;
     color:white;
@@ -29,7 +28,6 @@ body::before{
     z-index:-1;
 }
 
-/* TELAS */
 .tela{
     position:fixed;
     inset:0;
@@ -44,7 +42,6 @@ body::before{
     display:none;
 }
 
-/* TEXTO */
 h1, h2{
     font-size:clamp(22px,6vw,32px);
 }
@@ -78,10 +75,9 @@ h1, h2{
     width:28px;
     height:28px;
     font-size:22px;
-    transition:transform 0.05s linear;
 }
 
-/* FIM (AGORA EM CIMA) */
+/* SAÍDA EM CIMA */
 #fim{
     position:absolute;
     width:30px;
@@ -104,7 +100,7 @@ button{
 #sim{background:#ff4d6d;}
 #nao{position:absolute;background:#222;}
 
-/* PLAYER MUSICA */
+/* PLAYER MÚSICA */
 #player{
     position:fixed;
     bottom:0;
@@ -130,14 +126,12 @@ button{
 
 <body>
 
-<!-- INICIO -->
 <div id="inicio" class="tela">
 <h1>Karoline, você ama o Josué? ❤️</h1>
 <button id="sim" onclick="irLabirinto()">Sim</button>
 <button id="nao" onmouseover="fugir()">Não</button>
 </div>
 
-<!-- LABIRINTO -->
 <div id="labirintoTela" class="tela">
 <h2>Guia o coração ❤️</h2>
 <div id="labirinto">
@@ -145,28 +139,31 @@ button{
 <div id="playerHeart">❤️</div>
 <div id="fim"></div>
 
-<!-- LABIRINTO MAIS DIFÍCIL -->
-<div class="parede" style="top:0;left:60px;width:10px;height:220px;"></div>
-<div class="parede" style="top:60px;left:60px;width:180px;height:10px;"></div>
-<div class="parede" style="top:60px;left:230px;width:10px;height:200px;"></div>
-<div class="parede" style="top:150px;left:100px;width:130px;height:10px;"></div>
-<div class="parede" style="top:200px;left:100px;width:10px;height:120px;"></div>
+<!-- LABIRINTO MAIS INTELIGENTE (RAMIFICAÇÕES) -->
+<div class="parede" style="top:0;left:50px;width:10px;height:260px;"></div>
+<div class="parede" style="top:50px;left:50px;width:200px;height:10px;"></div>
+<div class="parede" style="top:50px;left:240px;width:10px;height:220px;"></div>
+
+<div class="parede" style="top:120px;left:100px;width:150px;height:10px;"></div>
+<div class="parede" style="top:120px;left:100px;width:10px;height:150px;"></div>
+
+<div class="parede" style="top:200px;left:0;width:200px;height:10px;"></div>
+<div class="parede" style="top:200px;left:200px;width:10px;height:120px;"></div>
+
+<div class="parede" style="top:260px;left:80px;width:150px;height:10px;"></div>
 
 </div>
 </div>
 
-<!-- POESIA -->
 <div id="poesia" class="tela">
 <div id="texto"></div>
 </div>
 
-<!-- FINAL -->
 <div id="final" class="tela">
 <h2>KAROLINE ❤️</h2>
 <p id="tempo"></p>
 </div>
 
-<!-- MUSICA -->
 <div id="player">
 <img id="capa" src="capa.jpg">
 <div id="info">Lana - Kamaitachi</div>
@@ -202,6 +199,10 @@ labirintoTela.style.display="flex";
 
 tempoInicio = Date.now();
 resetPlayer();
+
+/* CORREÇÃO DA MUSICA */
+musica.currentTime = 0;
+musica.play().catch(()=>{});
 }
 
 /* RESET */
@@ -211,7 +212,7 @@ posY = labirinto.clientHeight - 40;
 updatePlayer();
 }
 
-/* MOVIMENTO SUAVE */
+/* MOVIMENTO FLUIDO */
 document.addEventListener("touchmove", e=>{
 if(labirintoTela.style.display !== "flex") return;
 
@@ -221,7 +222,6 @@ let rect = labirinto.getBoundingClientRect();
 posX = t.clientX - rect.left -15;
 posY = t.clientY - rect.top -15;
 
-/* LIMITES */
 posX = Math.max(0, Math.min(posX, rect.width-30));
 posY = Math.max(0, Math.min(posY, rect.height-30));
 
@@ -245,7 +245,6 @@ resetPlayer();
 }
 });
 
-/* FIM */
 let f = fim.getBoundingClientRect();
 
 if(!(p.right<f.left || p.left>f.right || p.bottom<f.top || p.top>f.bottom)){
