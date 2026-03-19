@@ -53,6 +53,12 @@ button{
     display:none;
 }
 
+/* botão próximo escondido */
+#btnProximo{
+    margin-top:20px;
+    display:none;
+}
+
 /* player */
 #player{
     position:fixed;
@@ -71,7 +77,6 @@ button{
 }
 
 #info{flex:1;text-align:left;}
-
 input[type=range]{width:100%;}
 
 /* corações */
@@ -106,7 +111,7 @@ input[type=range]{width:100%;}
 <!-- TELA 2 -->
 <div id="poesia" class="tela">
     <div id="texto"></div>
-    <button onclick="irFinal()">próximo</button>
+    <button id="btnProximo" onclick="irFinal()">próximo</button>
 </div>
 
 <!-- TELA 3 -->
@@ -138,20 +143,19 @@ let musica = document.getElementById("musica");
 let barra = document.getElementById("barra");
 let tempoInicio = Date.now();
 
-/* música */
+/* tocar música */
 document.body.addEventListener("click", ()=>{
     musica.play();
 }, { once:true });
 
-/* ir pra poesia */
+/* ir poesia */
 function irPoesia(){
     document.getElementById("inicio").style.display="none";
     document.getElementById("poesia").style.display="flex";
-
     iniciarPoesia();
 }
 
-/* ir pro final */
+/* ir final */
 function irFinal(){
     document.getElementById("poesia").style.display="none";
     document.getElementById("final").style.display="flex";
@@ -161,7 +165,7 @@ function irFinal(){
     document.getElementById("tempo").innerText = "vc demorou " + segundos + "s";
 }
 
-/* poesia digitando */
+/* poesia */
 const linhas = [
 "eu nem tava pensando em vc...",
 "era pra eu tá estudando",
@@ -183,7 +187,10 @@ function iniciarPoesia(){
     let texto=document.getElementById("texto");
 
     function escrever(){
-        if(i>=linhas.length) return;
+        if(i>=linhas.length){
+            document.getElementById("btnProximo").style.display="block";
+            return;
+        }
 
         let p=document.createElement("p");
         texto.appendChild(p);
@@ -194,6 +201,7 @@ function iniciarPoesia(){
         let inter=setInterval(()=>{
             p.innerHTML+=linha[j]||"";
             j++;
+
             if(j>linha.length){
                 clearInterval(inter);
                 i++;
@@ -218,7 +226,7 @@ barra.addEventListener("input", ()=>{
     musica.currentTime = (barra.value/100)*musica.duration;
 });
 
-/* botão fugir */
+/* fugir */
 function fugir(){
     let x=Math.random()*(window.innerWidth-100);
     let y=Math.random()*(window.innerHeight-50);
