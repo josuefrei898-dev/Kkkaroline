@@ -8,16 +8,10 @@
 body{
     margin:0;
     overflow:hidden;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    flex-direction:column;
     font-family:sans-serif;
     color:white;
     text-align:center;
     background: url("foto.jpg") no-repeat center/cover;
-    filter: brightness(1.2) contrast(1.1);
 }
 
 body::before{
@@ -25,71 +19,38 @@ body::before{
     position:absolute;
     width:100%;
     height:100%;
-    background:rgba(0,0,0,0.4);
+    background:rgba(0,0,0,0.5);
     z-index:-1;
 }
 
+.tela{
+    position:fixed;
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+}
+
+/* botões */
 button{
-    padding:15px 30px;
-    font-size:18px;
+    padding:12px 25px;
     border:none;
-    border-radius:12px;
+    border-radius:10px;
+    font-size:16px;
     cursor:pointer;
 }
 
 #sim{background:#ff4d6d;}
-#nao{background:#222; position:absolute;}
-
-/* corações */
-.coracao{
-    position:fixed;
-    top:-10px;
-    font-size:20px;
-    animation:cair linear infinite;
-}
-@keyframes cair{to{transform:translateY(110vh);}}
-
-/* final */
-#final{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:black;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    font-size:24px;
-    opacity:0;
-    pointer-events:none;
-    transition:1s;
+#nao{
+    background:#222;
+    position:absolute;
 }
 
-/* POESIA PRO */
-#poesia{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    pointer-events:none;
-    opacity:0;
-    transition:1s;
-}
-
-#texto{
-    max-width:80%;
-    font-size:20px;
-    line-height:1.6;
-    background:rgba(0,0,0,0.7);
-    padding:20px;
-    border-radius:12px;
-    text-align:left;
+/* esconder telas */
+#poesia, #final{
+    display:none;
 }
 
 /* player */
@@ -102,88 +63,102 @@ button{
     display:flex;
     align-items:center;
     gap:10px;
-    opacity:0;
-    transition:0.5s;
 }
 
 #capa{
     width:50px;
     height:50px;
-    border-radius:8px;
 }
 
 #info{flex:1;text-align:left;}
+
 input[type=range]{width:100%;}
+
+/* corações */
+.coracao{
+    position:fixed;
+    top:-10px;
+    font-size:20px;
+    animation:cair linear infinite;
+}
+@keyframes cair{
+    to{transform:translateY(110vh);}
+}
 
 #pato{
     position:fixed;
     bottom:70px;
     right:10px;
     font-size:12px;
-    opacity:0.6;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Karoline, você ama o Josué? ❤️</h1>
-
-<button id="sim" onclick="respostaSim()">Sim</button>
-<button id="nao" onmouseover="fugir()" onclick="fugir()">Não</button>
-
-<audio id="musica">
-    <source src="lana.mp3" type="audio/mpeg">
-</audio>
-
-<div id="final">
-    <p>KAROLINE ❤️</p>
-    <p>te amo ❤️</p>
+<!-- TELA 1 -->
+<div id="inicio" class="tela">
+    <h1>Karoline, você ama o Josué? ❤️</h1>
+    <button id="sim" onclick="irPoesia()">Sim</button>
+    <button id="nao" onmouseover="fugir()">Não</button>
 </div>
 
-<!-- poesia -->
-<div id="poesia">
+<!-- TELA 2 -->
+<div id="poesia" class="tela">
     <div id="texto"></div>
+    <button onclick="irFinal()">próximo</button>
 </div>
 
-<!-- player -->
+<!-- TELA 3 -->
+<div id="final" class="tela">
+    <h2>KAROLINE ❤️</h2>
+    <p>te amo ❤️</p>
+    <p id="tempo"></p>
+</div>
+
+<!-- PLAYER -->
 <div id="player">
     <img id="capa" src="capa.jpg">
     <div id="info">
         <div>Lana</div>
-        <div style="font-size:12px; opacity:0.7;">Kamaitachi</div>
-        <input type="range" id="barra" value="0">
+        <div style="font-size:12px;">Kamaitachi</div>
+        <input type="range" id="barra">
     </div>
     <button onclick="toggle()">▶</button>
 </div>
+
+<audio id="musica">
+    <source src="lana.mp3">
+</audio>
 
 <div id="pato">🦆 quak</div>
 
 <script>
 let musica = document.getElementById("musica");
 let barra = document.getElementById("barra");
-let tamanho = 1;
 let tempoInicio = Date.now();
 
+/* música */
 document.body.addEventListener("click", ()=>{
     musica.play();
 }, { once:true });
 
-function respostaSim(){
-    document.getElementById("final").style.opacity = 1;
-    document.getElementById("player").style.opacity = 1;
-    document.getElementById("poesia").style.opacity = 1;
+/* ir pra poesia */
+function irPoesia(){
+    document.getElementById("inicio").style.display="none";
+    document.getElementById("poesia").style.display="flex";
 
     iniciarPoesia();
+}
+
+/* ir pro final */
+function irFinal(){
+    document.getElementById("poesia").style.display="none";
+    document.getElementById("final").style.display="flex";
 
     let tempoFinal = Date.now();
     let segundos = ((tempoFinal - tempoInicio)/1000).toFixed(1);
-
-    let t = document.createElement("p");
-    t.innerText = "vc demorou " + segundos + "s";
-    document.getElementById("final").appendChild(t);
-
-    musica.play();
+    document.getElementById("tempo").innerText = "vc demorou " + segundos + "s";
 }
 
 /* poesia digitando */
@@ -192,54 +167,47 @@ const linhas = [
 "era pra eu tá estudando",
 "mas vc apareceu",
 "",
-"e é doido pensar",
-"que vc me ajudou até nisso",
+"vc me ajudou até nisso",
 "até com html",
 "",
 "cada coisa que eu faço",
 "tem um pouco de vc",
 "",
-"e agr eu só quero",
-"te ver logo dnv",
-"pq na moral",
-"eu te amo pra krl ❤️"
+"eu só quero te ver logo",
+"",
+"pq eu te amo pra krl ❤️"
 ];
 
 function iniciarPoesia(){
-    let i = 0;
-    let texto = document.getElementById("texto");
+    let i=0;
+    let texto=document.getElementById("texto");
 
-    function escreverLinha(){
-        if(i >= linhas.length) return;
+    function escrever(){
+        if(i>=linhas.length) return;
 
-        let p = document.createElement("p");
+        let p=document.createElement("p");
         texto.appendChild(p);
 
-        let letra = 0;
-        let linha = linhas[i];
+        let j=0;
+        let linha=linhas[i];
 
-        let intervalo = setInterval(()=>{
-            p.innerHTML += linha[letra] || "";
-            letra++;
-
-            if(letra > linha.length){
-                clearInterval(intervalo);
+        let inter=setInterval(()=>{
+            p.innerHTML+=linha[j]||"";
+            j++;
+            if(j>linha.length){
+                clearInterval(inter);
                 i++;
-                setTimeout(escreverLinha, 500);
+                setTimeout(escrever,400);
             }
-        }, 40);
+        },40);
     }
 
-    escreverLinha();
+    escrever();
 }
 
 /* player */
 function toggle(){
-    if(musica.paused){
-        musica.play();
-    }else{
-        musica.pause();
-    }
+    musica.paused ? musica.play() : musica.pause();
 }
 
 musica.addEventListener("timeupdate", ()=>{
@@ -252,21 +220,16 @@ barra.addEventListener("input", ()=>{
 
 /* botão fugir */
 function fugir(){
-    let x = Math.random()*(window.innerWidth-100);
-    let y = Math.random()*(window.innerHeight-50);
-
-    let b = document.getElementById("nao");
-    b.style.left = x+"px";
-    b.style.top = y+"px";
-
-    let sim = document.getElementById("sim");
-    tamanho += 0.2;
-    sim.style.transform = "scale("+tamanho+")";
+    let x=Math.random()*(window.innerWidth-100);
+    let y=Math.random()*(window.innerHeight-50);
+    let b=document.getElementById("nao");
+    b.style.left=x+"px";
+    b.style.top=y+"px";
 }
 
 /* corações */
 function criarCoracao(){
-    let c = document.createElement("div");
+    let c=document.createElement("div");
     c.className="coracao";
     c.innerHTML="❤️";
     c.style.left=Math.random()*100+"vw";
@@ -279,4 +242,3 @@ setInterval(criarCoracao,300);
 
 </body>
 </html>
-    
