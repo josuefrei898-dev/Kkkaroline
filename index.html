@@ -40,12 +40,11 @@ body::before{
     padding:20px;
 }
 
-/* ESCONDER */
 #labirintoTela, #poesia, #final{
     display:none;
 }
 
-/* TEXTOS RESPONSIVOS */
+/* TEXTO */
 h1, h2{
     font-size:clamp(22px,6vw,32px);
 }
@@ -64,6 +63,7 @@ h1, h2{
     background:#111;
     position:relative;
     border:3px solid white;
+    overflow:hidden;
 }
 
 /* PAREDES */
@@ -78,16 +78,18 @@ h1, h2{
     width:28px;
     height:28px;
     font-size:22px;
+    transition:transform 0.05s linear;
 }
 
-/* FIM */
+/* FIM (AGORA EM CIMA) */
 #fim{
     position:absolute;
     width:30px;
     height:30px;
     background:lime;
-    right:10px;
-    bottom:10px;
+    top:5px;
+    left:50%;
+    transform:translateX(-50%);
 }
 
 /* BOTÕES */
@@ -102,7 +104,7 @@ button{
 #sim{background:#ff4d6d;}
 #nao{position:absolute;background:#222;}
 
-/* PLAYER MÚSICA */
+/* PLAYER MUSICA */
 #player{
     position:fixed;
     bottom:0;
@@ -115,23 +117,10 @@ button{
     height:80px;
 }
 
-#capa{
-    width:70px;
-    height:70px;
-}
+#capa{width:70px;height:70px;}
+#info{flex:1;text-align:left;font-size:18px;}
+#player button{font-size:22px;padding:10px 20px;}
 
-#info{
-    flex:1;
-    text-align:left;
-    font-size:18px;
-}
-
-#player button{
-    font-size:22px;
-    padding:10px 20px;
-}
-
-/* FINAL */
 #final{
     gap:10px;
     font-size:22px;
@@ -156,10 +145,12 @@ button{
 <div id="playerHeart">❤️</div>
 <div id="fim"></div>
 
-<!-- paredes -->
-<div class="parede" style="top:0;left:80px;width:10px;height:200px;"></div>
-<div class="parede" style="top:100px;left:80px;width:150px;height:10px;"></div>
-<div class="parede" style="top:50px;left:200px;width:10px;height:200px;"></div>
+<!-- LABIRINTO MAIS DIFÍCIL -->
+<div class="parede" style="top:0;left:60px;width:10px;height:220px;"></div>
+<div class="parede" style="top:60px;left:60px;width:180px;height:10px;"></div>
+<div class="parede" style="top:60px;left:230px;width:10px;height:200px;"></div>
+<div class="parede" style="top:150px;left:100px;width:130px;height:10px;"></div>
+<div class="parede" style="top:200px;left:100px;width:10px;height:120px;"></div>
 
 </div>
 </div>
@@ -201,7 +192,10 @@ let labirinto = document.getElementById("labirinto");
 let fim = document.getElementById("fim");
 let player = document.getElementById("playerHeart");
 
-/* INICIAR */
+let posX = 10;
+let posY = 260;
+
+/* INICIO */
 function irLabirinto(){
 inicio.style.display="none";
 labirintoTela.style.display="flex";
@@ -210,31 +204,34 @@ tempoInicio = Date.now();
 resetPlayer();
 }
 
-/* RESET PLAYER */
+/* RESET */
 function resetPlayer(){
-player.style.left="10px";
-player.style.top="10px";
+posX = 10;
+posY = labirinto.clientHeight - 40;
+updatePlayer();
 }
 
-/* CONTROLE TOUCH */
+/* MOVIMENTO SUAVE */
 document.addEventListener("touchmove", e=>{
 if(labirintoTela.style.display !== "flex") return;
 
 let t = e.touches[0];
 let rect = labirinto.getBoundingClientRect();
 
-let x = t.clientX - rect.left -15;
-let y = t.clientY - rect.top -15;
+posX = t.clientX - rect.left -15;
+posY = t.clientY - rect.top -15;
 
 /* LIMITES */
-x = Math.max(0, Math.min(x, rect.width-30));
-y = Math.max(0, Math.min(y, rect.height-30));
+posX = Math.max(0, Math.min(posX, rect.width-30));
+posY = Math.max(0, Math.min(posY, rect.height-30));
 
-player.style.left = x+"px";
-player.style.top = y+"px";
-
+updatePlayer();
 colisao();
 });
+
+function updatePlayer(){
+player.style.transform = `translate(${posX}px, ${posY}px)`;
+}
 
 /* COLISÃO */
 function colisao(){
@@ -248,7 +245,7 @@ resetPlayer();
 }
 });
 
-/* CHEGAR NO FIM */
+/* FIM */
 let f = fim.getBoundingClientRect();
 
 if(!(p.right<f.left || p.left>f.right || p.bottom<f.top || p.top>f.bottom)){
@@ -256,7 +253,7 @@ terminarLabirinto();
 }
 }
 
-/* TERMINAR */
+/* FINAL */
 function terminarLabirinto(){
 labirintoTela.style.display="none";
 poesia.style.display="flex";
