@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Pergunta</title>
+
+<style>
+body{
+    margin:0;
+    overflow:hidden;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    flex-direction:column;
+    font-family:sans-serif;
+    color:white;
+    text-align:center;
+
+    background: url("foto.jpg") no-repeat center/cover;
+}
+
+/* escurecer fundo */
+body::before{
+    content:"";
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+    z-index:-1;
+}
+
+h1{
+    font-size:26px;
+}
+
+/* botões */
+button{
+    padding:15px 30px;
+    font-size:18px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+#sim{
+    background:#ff4d6d;
+    color:white;
+}
+
+#nao{
+    background:#222;
+    color:white;
+    position:absolute;
+}
+
+/* corações */
+.coracao{
+    position:fixed;
+    top:-10px;
+    font-size:20px;
+    animation:cair linear infinite;
+}
+
+@keyframes cair{
+    to{
+        transform:translateY(110vh);
+    }
+}
+
+/* tela final */
+#final{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:black;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    font-size:24px;
+    opacity:0;
+    pointer-events:none;
+    transition:1s;
+}
+
+/* pato */
+#pato{
+    position:fixed;
+    bottom:10px;
+    right:10px;
+    font-size:12px;
+    opacity:0.6;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Karoline, você ama o Josué? ❤️</h1>
+
+<div>
+    <button id="sim" onclick="respostaSim()">Sim</button>
+    <button id="nao" onmouseover="fugir()" onclick="fugir()">Não</button>
+</div>
+
+<!-- Música corrigida -->
+<audio id="musica" loop>
+    <source src="lana.mp3" type="audio/mpeg">
+</audio>
+
+<div id="final">
+    <p>KAROLINE ❤️</p>
+    <p>se vc gostou</p>
+    <p>é pq vc é esquisita msm</p>
+    <p>te amo ❤️</p>
+</div>
+
+<div id="pato">🦆 quak</div>
+
+<script>
+let tamanho = 1;
+let tempoInicio = Date.now();
+
+let musica = document.getElementById("musica");
+
+/* tocar música no primeiro toque */
+document.body.addEventListener("click", function(){
+    musica.play();
+}, { once: true });
+
+function respostaSim(){
+    let final = document.getElementById("final");
+    final.style.opacity = 1;
+    final.style.pointerEvents = "all";
+
+    let tempoFinal = Date.now();
+    let segundos = ((tempoFinal - tempoInicio) / 1000).toFixed(1);
+
+    let tempoTexto = document.createElement("p");
+    tempoTexto.innerText = "vc demorou " + segundos + "s";
+    final.appendChild(tempoTexto);
+
+    if(navigator.vibrate){
+        navigator.vibrate([200,100,200]);
+    }
+}
+
+/* botão fugindo + sim crescendo */
+function fugir(){
+    let largura = window.innerWidth - 100;
+    let altura = window.innerHeight - 50;
+
+    let x = Math.random() * largura;
+    let y = Math.random() * altura;
+
+    let botao = document.getElementById("nao");
+    botao.style.left = x + "px";
+    botao.style.top = y + "px";
+
+    let sim = document.getElementById("sim");
+    tamanho += 0.2;
+    sim.style.transform = "scale(" + tamanho + ")";
+}
+
+/* corações */
+function criarCoracao(){
+    const coracao = document.createElement("div");
+    coracao.classList.add("coracao");
+    coracao.innerHTML = "❤️";
+
+    coracao.style.left = Math.random() * 100 + "vw";
+    coracao.style.animationDuration = (Math.random() * 3 + 2) + "s";
+
+    document.body.appendChild(coracao);
+
+    setTimeout(() => {
+        coracao.remove();
+    }, 5000);
+}
+
+setInterval(criarCoracao, 300);
+</script>
+
+</body>
+</html>
