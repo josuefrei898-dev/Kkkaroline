@@ -16,25 +16,19 @@ body{
     font-family:sans-serif;
     color:white;
     text-align:center;
-
     background: url("foto.jpg") no-repeat center/cover;
+    filter: brightness(1.2) contrast(1.1);
 }
 
-/* escurecer fundo */
 body::before{
     content:"";
     position:absolute;
     width:100%;
     height:100%;
-    background:rgba(0,0,0,0.6);
+    background:rgba(0,0,0,0.4);
     z-index:-1;
 }
 
-h1{
-    font-size:26px;
-}
-
-/* botões */
 button{
     padding:15px 30px;
     font-size:18px;
@@ -44,14 +38,9 @@ button{
     transition:0.2s;
 }
 
-#sim{
-    background:#ff4d6d;
-    color:white;
-}
-
+#sim{background:#ff4d6d;}
 #nao{
     background:#222;
-    color:white;
     position:absolute;
 }
 
@@ -64,12 +53,10 @@ button{
 }
 
 @keyframes cair{
-    to{
-        transform:translateY(110vh);
-    }
+    to{transform:translateY(110vh);}
 }
 
-/* tela final */
+/* final */
 #final{
     position:fixed;
     top:0;
@@ -77,7 +64,6 @@ button{
     width:100%;
     height:100%;
     background:black;
-    color:white;
     display:flex;
     justify-content:center;
     align-items:center;
@@ -88,10 +74,61 @@ button{
     transition:1s;
 }
 
-/* pato */
+/* poesia */
+#poesia{
+    position:fixed;
+    bottom:-100%;
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:flex-end;
+    pointer-events:none;
+}
+
+#texto{
+    text-align:center;
+    font-size:20px;
+    animation:subir 20s linear forwards;
+}
+
+@keyframes subir{
+    from{transform:translateY(100%);}
+    to{transform:translateY(-150%);}
+}
+
+/* player */
+#player{
+    position:fixed;
+    bottom:0;
+    width:100%;
+    background:#111;
+    padding:10px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    opacity:0;
+    transition:0.5s;
+}
+
+#capa{
+    width:50px;
+    height:50px;
+    border-radius:8px;
+}
+
+#info{
+    flex:1;
+    text-align:left;
+}
+
+input[type=range]{
+    width:100%;
+}
+
 #pato{
     position:fixed;
-    bottom:10px;
+    bottom:70px;
     right:10px;
     font-size:12px;
     opacity:0.6;
@@ -103,13 +140,10 @@ button{
 
 <h1>Karoline, você ama o Josué? ❤️</h1>
 
-<div>
-    <button id="sim" onclick="respostaSim()">Sim</button>
-    <button id="nao" onmouseover="fugir()" onclick="fugir()">Não</button>
-</div>
+<button id="sim" onclick="respostaSim()">Sim</button>
+<button id="nao" onmouseover="fugir()" onclick="fugir()">Não</button>
 
-<!-- Música corrigida -->
-<audio id="musica" loop>
+<audio id="musica">
     <source src="lana.mp3" type="audio/mpeg">
 </audio>
 
@@ -120,25 +154,113 @@ button{
     <p>te amo ❤️</p>
 </div>
 
+<!-- poesia -->
+<div id="poesia">
+    <div id="texto">
+        <p>eu nem tava pensando em vc...</p>
+        <p>era pra eu tá estudando</p>
+        <p>mas vc apareceu</p>
+        <br>
+        <p>e é doido pensar</p>
+        <p>que vc me ajudou até nisso</p>
+        <p>até com html</p>
+        <br>
+        <p>cada coisa que eu faço</p>
+        <p>tem um pouco de vc</p>
+        <br>
+        <p>e agr eu só quero</p>
+        <p>te ver logo dnv</p>
+        <br>
+        <p>pq na moral</p>
+        <p>eu te amo pra krl ❤️</p>
+    </div>
+</div>
+
+<!-- player -->
+<div id="player">
+    <img id="capa" src="capa.jpg">
+    <div id="info">
+        <div>Lana</div>
+        <div style="font-size:12px; opacity:0.7;">Kamaitachi</div>
+        <input type="range" id="barra" value="0">
+    </div>
+    <button onclick="toggle()">▶</button>
+</div>
+
 <div id="pato">🦆 quak</div>
 
 <script>
+let musica = document.getElementById("musica");
+let barra = document.getElementById("barra");
 let tamanho = 1;
 let tempoInicio = Date.now();
 
-let musica = document.getElementById("musica");
-
 /* tocar música no primeiro toque */
-document.body.addEventListener("click", function(){
+document.body.addEventListener("click", ()=>{
     musica.play();
-}, { once: true });
+}, { once:true });
 
 function respostaSim(){
-    let final = document.getElementById("final");
-    final.style.opacity = 1;
-    final.style.pointerEvents = "all";
+    document.getElementById("final").style.opacity = 1;
+    document.getElementById("player").style.opacity = 1;
+    document.getElementById("poesia").style.bottom = "0";
 
     let tempoFinal = Date.now();
+    let segundos = ((tempoFinal - tempoInicio)/1000).toFixed(1);
+
+    let t = document.createElement("p");
+    t.innerText = "vc demorou " + segundos + "s";
+    document.getElementById("final").appendChild(t);
+
+    musica.play();
+}
+
+/* player */
+function toggle(){
+    if(musica.paused){
+        musica.play();
+    }else{
+        musica.pause();
+    }
+}
+
+musica.addEventListener("timeupdate", ()=>{
+    barra.value = (musica.currentTime / musica.duration)*100;
+});
+
+barra.addEventListener("input", ()=>{
+    musica.currentTime = (barra.value/100)*musica.duration;
+});
+
+/* botão fugir */
+function fugir(){
+    let x = Math.random()*(window.innerWidth-100);
+    let y = Math.random()*(window.innerHeight-50);
+
+    let b = document.getElementById("nao");
+    b.style.left = x+"px";
+    b.style.top = y+"px";
+
+    let sim = document.getElementById("sim");
+    tamanho += 0.2;
+    sim.style.transform = "scale("+tamanho+")";
+}
+
+/* corações */
+function criarCoracao(){
+    let c = document.createElement("div");
+    c.className="coracao";
+    c.innerHTML="❤️";
+    c.style.left=Math.random()*100+"vw";
+    c.style.animationDuration=(Math.random()*3+2)+"s";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),5000);
+}
+setInterval(criarCoracao,300);
+</script>
+
+</body>
+</html>    let tempoFinal = Date.now();
     let segundos = ((tempoFinal - tempoInicio) / 1000).toFixed(1);
 
     let tempoTexto = document.createElement("p");
