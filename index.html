@@ -35,14 +35,10 @@ button{
     border:none;
     border-radius:12px;
     cursor:pointer;
-    transition:0.2s;
 }
 
 #sim{background:#ff4d6d;}
-#nao{
-    background:#222;
-    position:absolute;
-}
+#nao{background:#222; position:absolute;}
 
 /* corações */
 .coracao{
@@ -51,10 +47,7 @@ button{
     font-size:20px;
     animation:cair linear infinite;
 }
-
-@keyframes cair{
-    to{transform:translateY(110vh);}
-}
+@keyframes cair{to{transform:translateY(110vh);}}
 
 /* final */
 #final{
@@ -74,27 +67,29 @@ button{
     transition:1s;
 }
 
-/* poesia */
+/* POESIA PRO */
 #poesia{
     position:fixed;
-    bottom:-100%;
+    top:0;
+    left:0;
     width:100%;
     height:100%;
     display:flex;
     justify-content:center;
-    align-items:flex-end;
+    align-items:center;
     pointer-events:none;
+    opacity:0;
+    transition:1s;
 }
 
 #texto{
-    text-align:center;
+    max-width:80%;
     font-size:20px;
-    animation:subir 20s linear forwards;
-}
-
-@keyframes subir{
-    from{transform:translateY(100%);}
-    to{transform:translateY(-150%);}
+    line-height:1.6;
+    background:rgba(0,0,0,0.7);
+    padding:20px;
+    border-radius:12px;
+    text-align:left;
 }
 
 /* player */
@@ -117,14 +112,8 @@ button{
     border-radius:8px;
 }
 
-#info{
-    flex:1;
-    text-align:left;
-}
-
-input[type=range]{
-    width:100%;
-}
+#info{flex:1;text-align:left;}
+input[type=range]{width:100%;}
 
 #pato{
     position:fixed;
@@ -149,31 +138,12 @@ input[type=range]{
 
 <div id="final">
     <p>KAROLINE ❤️</p>
-    <p>se vc gostou</p>
-    <p>é pq vc é esquisita msm</p>
     <p>te amo ❤️</p>
 </div>
 
 <!-- poesia -->
 <div id="poesia">
-    <div id="texto">
-        <p>eu nem tava pensando em vc...</p>
-        <p>era pra eu tá estudando</p>
-        <p>mas vc apareceu</p>
-        <br>
-        <p>e é doido pensar</p>
-        <p>que vc me ajudou até nisso</p>
-        <p>até com html</p>
-        <br>
-        <p>cada coisa que eu faço</p>
-        <p>tem um pouco de vc</p>
-        <br>
-        <p>e agr eu só quero</p>
-        <p>te ver logo dnv</p>
-        <br>
-        <p>pq na moral</p>
-        <p>eu te amo pra krl ❤️</p>
-    </div>
+    <div id="texto"></div>
 </div>
 
 <!-- player -->
@@ -195,7 +165,6 @@ let barra = document.getElementById("barra");
 let tamanho = 1;
 let tempoInicio = Date.now();
 
-/* tocar música no primeiro toque */
 document.body.addEventListener("click", ()=>{
     musica.play();
 }, { once:true });
@@ -203,7 +172,9 @@ document.body.addEventListener("click", ()=>{
 function respostaSim(){
     document.getElementById("final").style.opacity = 1;
     document.getElementById("player").style.opacity = 1;
-    document.getElementById("poesia").style.bottom = "0";
+    document.getElementById("poesia").style.opacity = 1;
+
+    iniciarPoesia();
 
     let tempoFinal = Date.now();
     let segundos = ((tempoFinal - tempoInicio)/1000).toFixed(1);
@@ -213,6 +184,54 @@ function respostaSim(){
     document.getElementById("final").appendChild(t);
 
     musica.play();
+}
+
+/* poesia digitando */
+const linhas = [
+"eu nem tava pensando em vc...",
+"era pra eu tá estudando",
+"mas vc apareceu",
+"",
+"e é doido pensar",
+"que vc me ajudou até nisso",
+"até com html",
+"",
+"cada coisa que eu faço",
+"tem um pouco de vc",
+"",
+"e agr eu só quero",
+"te ver logo dnv",
+"",
+"pq na moral",
+"eu te amo pra krl ❤️"
+];
+
+function iniciarPoesia(){
+    let i = 0;
+    let texto = document.getElementById("texto");
+
+    function escreverLinha(){
+        if(i >= linhas.length) return;
+
+        let p = document.createElement("p");
+        texto.appendChild(p);
+
+        let letra = 0;
+        let linha = linhas[i];
+
+        let intervalo = setInterval(()=>{
+            p.innerHTML += linha[letra] || "";
+            letra++;
+
+            if(letra > linha.length){
+                clearInterval(intervalo);
+                i++;
+                setTimeout(escreverLinha, 500);
+            }
+        }, 40);
+    }
+
+    escreverLinha();
 }
 
 /* player */
@@ -260,53 +279,5 @@ setInterval(criarCoracao,300);
 </script>
 
 </body>
-</html>    let tempoFinal = Date.now();
-    let segundos = ((tempoFinal - tempoInicio) / 1000).toFixed(1);
-
-    let tempoTexto = document.createElement("p");
-    tempoTexto.innerText = "vc demorou " + segundos + "s";
-    final.appendChild(tempoTexto);
-
-    if(navigator.vibrate){
-        navigator.vibrate([200,100,200]);
-    }
-}
-
-/* botão fugindo + sim crescendo */
-function fugir(){
-    let largura = window.innerWidth - 100;
-    let altura = window.innerHeight - 50;
-
-    let x = Math.random() * largura;
-    let y = Math.random() * altura;
-
-    let botao = document.getElementById("nao");
-    botao.style.left = x + "px";
-    botao.style.top = y + "px";
-
-    let sim = document.getElementById("sim");
-    tamanho += 0.2;
-    sim.style.transform = "scale(" + tamanho + ")";
-}
-
-/* corações */
-function criarCoracao(){
-    const coracao = document.createElement("div");
-    coracao.classList.add("coracao");
-    coracao.innerHTML = "❤️";
-
-    coracao.style.left = Math.random() * 100 + "vw";
-    coracao.style.animationDuration = (Math.random() * 3 + 2) + "s";
-
-    document.body.appendChild(coracao);
-
-    setTimeout(() => {
-        coracao.remove();
-    }, 5000);
-}
-
-setInterval(criarCoracao, 300);
-</script>
-
-</body>
 </html>
+    
